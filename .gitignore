@@ -1,2 +1,6 @@
+dpll
+*.cmi
+*.cmx
+*.o
 .vs
 .vscode

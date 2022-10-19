@@ -38,9 +38,37 @@ let coloriage = [[1;2;3];[4;5;6];[7;8;9];[10;11;12];[13;14;15];[16;17;18];[19;20
 (* simplifie : int -> int list list -> int list list 
    applique la simplification de l'ensemble des clauses en mettant
    le littéral l à vrai *)
-let simplifie l clauses =
-  (* à compléter *)
-  []
+let rec simplifie l clauses =
+  match clauses with
+  | [] -> []
+  | x :: slauses ->
+    let rec rmFrmClause clause = 
+      match clause with
+      | [] -> []
+      | x :: lclause ->
+        if x = l then
+          failwith "positif"
+        else if x = -l then
+          rmFrmClause lclause
+        else
+          x :: rmFrmClause lclause
+    in rmFrmClause x :: simplifie l slauses
+;;
+
+let rec contains l clause =
+  match clause with
+  | [] -> false
+  | [x] -> 
+    if x = l || x = -l then
+      true 
+    else
+      false
+  | x :: slause ->
+    if x = l || x = -l then
+      true 
+    else
+      contains l slause
+;;
 
 (* solveur_split : int list list -> int list -> int list option
    exemple d'utilisation de `simplifie' *)

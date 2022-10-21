@@ -38,6 +38,8 @@ let coloriage = [[1;2;3];[4;5;6];[7;8;9];[10;11;12];[13;14;15];[16;17;18];[19;20
 (* simplifie : int -> int list list -> int list list 
    applique la simplification de l'ensemble des clauses en mettant
    le littéral l à vrai *)
+exception Vide
+
 let rec simplifie l clauses =
   match clauses with
   | [] -> []
@@ -47,12 +49,13 @@ let rec simplifie l clauses =
       | [] -> []
       | x :: lclause ->
         if x = l then
-          failwith "positif"
+          raise (Vide)
         else if x = -l then
           rmFrmClause lclause
         else
           x :: rmFrmClause lclause
-    in rmFrmClause x :: simplifie l slauses
+    in try rmFrmClause x :: simplifie l slauses with
+    | Vide -> simplifie l slauses
 ;;
 
 let rec contains l clause =

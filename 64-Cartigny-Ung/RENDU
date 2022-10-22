@@ -30,7 +30,16 @@ Questions sur votre code
    - Si non, expliquez en quelques phrases en français comment
      fonctionne votre implémentation de `simplifie`.
 
-**à remplir**
+Nous n'avons pas utilisé la fonction `filter_map`.
+La fonction itère sur chaque clauses dans l'ensemble des clauses
+Pour chaque clause la fonction applique rmFrmClause qui:
+   - si l'opposé de l est présent
+     enlève l de la clause et la retourne
+   - si l est présent
+     lève une exception `Vide`
+Si la fonction rmFrmClause renvoie l'exception `Vide` on enlève
+la clause sinon on continue en gardant la clause modifiée (on non)
+par rmFrmClause
 
 ---
 
@@ -43,7 +52,8 @@ Questions sur votre code
    comment ces fonctions auxiliaires sont utilisées dans votre
    implémentation de la fonction `unitaire`.
 
-**à remplir**
+Des fonctions auxiliaires ne sont pas utilisées pour `unitaire`.
+Un match de la clause abvec [l] suffit.
 
 ---
 
@@ -66,7 +76,10 @@ Questions sur votre code
 
 5. Avez-vous d'autres remarques sur votre rendu ? (question optionnelle)
 
-**à remplir**
+Une fonction contains à été écrite mais n'est pas utilisée.
+contains : int -> int list -> bool
+   renvoi true si le litéral l est dans la clause en négatif ou positif
+   et false sinon
 
 ---
 

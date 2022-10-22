@@ -41,37 +41,49 @@ let coloriage = [[1;2;3];[4;5;6];[7;8;9];[10;11;12];[13;14;15];[16;17;18];[19;20
 exception Vide
 
 let rec simplifie l clauses =
+  (*Pour chaques closes*)
   match clauses with
-  | [] -> []
+  | [] -> []  (*fin*)
   | x :: slauses ->
     let rec rmFrmClause clause = 
+      (*Pour chaques litérales de la clause*)
       match clause with
       | [] -> []
       | x :: lclause ->
+        (*Si litérale l positif alors on renvoi une exception Vide*)
         if x = l then
           raise (Vide)
+        (*Si il est négatif on le retire de la clause*)
         else if x = -l then
           rmFrmClause lclause
+        (*Si il n'est pas trouvé on regarde les autres littéraux de la clause*)
         else
           x :: rmFrmClause lclause
+    (*Si la fonction rmFrmClause renvoie l'exception Vide on enlève la clause sinon on continu en gardant la clause modifiée (on non) par rmFrmClause*)
     in try rmFrmClause x :: simplifie l slauses with
     | Vide -> simplifie l slauses
 ;;
 
+(*Test
+simplifie 1 [[1;2;3];[-1;2];[4;5]];; *)
+
+(*contains : int -> int list -> bool
+   revoi true si le litéral l est dans la clause en négatif ou positif
+   et false sinon*)
 let rec contains l clause =
   match clause with
+  (*Littéral l non trouvé*)
   | [] -> false
-  | [x] -> 
-    if x = l || x = -l then
-      true 
-    else
-      false
   | x :: slause ->
+    (*Si x est le littéral l alors true sinon continuer*)
     if x = l || x = -l then
       true 
     else
-      contains l slause
-;;
+      contains l slause;;
+
+(*Test contains
+contains 1 [0;2;4];;
+contains 0 [1;2;0];; *)
 
 (* solveur_split : int list list -> int list -> int list option
    exemple d'utilisation de `simplifie' *)
@@ -99,9 +111,20 @@ let rec solveur_split clauses interpretation =
     - si `clauses' contient au moins une clause unitaire, retourne
       le littéral de cette clause unitaire ;
     - sinon, lève une exception `Not_found' *)
-let unitaire clauses =
-  (* à compléter *)
-  0
+let rec unitaire clauses =
+  match clauses with
+  (*Fin clause unitaire non trouvée*)
+  | [] -> raise Not_found
+  | clause::clauses ->
+    match clause with
+    (*Clause unitaire donc on renvoi le littéral*)
+    | [l] -> l
+    (*Clause pas unitaire on continu*)
+    | _ -> unitaire clauses;;
+
+(*Test unitaire
+unitaire [[1;2;4];[4;7]; [1;7]];;
+unitaire [[1;2;4];[7]; [1;7]];; *)
     
 (* pur : int list list -> int
     - si `clauses' contient au moins un littéral pur, retourne

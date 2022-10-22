@@ -65,7 +65,7 @@ let rec simplifie l clauses =
 ;;
 
 (*Test
-simplifie 1 [[1;2;3];[-1;2];[4;5]];; *)
+  simplifie 1 [[1;2;3];[-1;2];[4;5]];; *)
 
 (*contains : int -> int list -> bool
    revoi true si le litéral l est dans la clause en négatif ou positif
@@ -82,8 +82,8 @@ let rec contains l clause =
       contains l slause;;
 
 (*Test contains
-contains 1 [0;2;4];;
-contains 0 [1;2;0];; *)
+  contains 1 [0;2;4];;
+  contains 0 [1;2;0];; *)
 
 (* solveur_split : int list list -> int list -> int list option
    exemple d'utilisation de `simplifie' *)
@@ -123,16 +123,126 @@ let rec unitaire clauses =
     | _ -> unitaire clauses;;
 
 (*Test unitaire
-unitaire [[1;2;4];[4;7]; [1;7]];;
-unitaire [[1;2;4];[7]; [1;7]];; *)
+   unitaire [[1;2;4];[4;7]; [1;7]];;
+   unitaire [[1;2;4];[7]; [1;7]];; *)
     
+(* insert_ensemble_rec : 'a -> 'a list -> 'a list -> 'a list
+   fonction auxiliare de insert_ensemble permettant d'ajouter un élément à un ensemble trié
+   right doit être initialisé à [] (récursivité terminale)*)
+let rec insert_ensemble_rec x left right =
+  match left with
+  (*element plus grand que tous les elements de l'ensemble donc on l'ajoute à la fin*)
+  | [] -> List.rev_append right [x]
+  (*element plus petit on continu*)
+  | y::l when x > y -> insert_ensemble_rec x l (y::right)
+  (*element déjà dans l'ensemble on renvoi l'ensemble de base*)
+  | y::l when x = y -> List.rev_append right left
+  (*on retourn l'ensemble en y insérant l'element*)
+  | y::l -> List.rev_append (right) (x::left);;
+
+(*insert_ensemble : 'a -> 'a list -> 'a list
+   ajoute un élément à un ensemble trié (récursivité terminale)*)
+let insert_ensemble x l =
+  insert_ensemble_rec x l [];;
+
+(*Tests insert_ensemble
+   insert_ensemble 5 [1;2;3;8];;
+   insert_ensemble 5 [1;2;3;5];;*)
+
+(*list_ensemble_rec : 'a list -> 'a list -> 'a list
+   fonction auxiliaire de list_ensemble
+   créer un ensemble trié à partir d'une liste (récursivité terminale)
+   e initialisé à []*)
+let rec list_ensemble_rec l e =
+  match l with
+  (*fin on renvoi l'ensemble créé*)
+  | [] -> e
+  (*on insert l'élément x dans l'ensemble*)
+  | x::l -> list_ensemble_rec l (insert_ensemble x e);;
+
+(*list_ensemble : 'a list -> 'a list
+   créer un ensemble trié à partir d'une liste (récursivité terminale)*)
+let list_ensemble l =
+  list_ensemble_rec l [];;
+
+(*Test list_ensemble
+   list_ensemble [8;2;4;5;7;8;2;0;1;4;6];;*)
+
+(*aplatir_list_rec : 'a list list -> 'a list -> 'a list
+   fonction auxiliaire de aplatir_list
+   transforme une liste 2D en liste 1D (récursivité terminale)
+   l initialisé à []*)
+let rec aplatir_list_rec ll l =
+  match ll with
+  (*fin on renvoi la liste*)
+  | [] -> l
+  | x::ll -> 
+    match x with
+    (*fin sous liste on continu avec les autres sous listes*)
+    | [] -> aplatir_list_rec ll l
+    (*on insert l'élément de la sous liste et continu avec cette même sous liste*)
+    | y::l' -> aplatir_list_rec (l'::ll) (y::l);;
+
+(*aplatir_list : 'a list list -> 'a list
+   transforme une liste 2D en liste 1D (récursivité terminale)*)
+let aplatir_list ll =
+  aplatir_list_rec ll [];;
+
+(*Test aplatir_list
+   aplatir_list [[1;4;5];[4;7;2;5];[7;1;0;2;5;4]];;*)
+
+(*list2d_ensemble : 'a lis list -> 'a list
+   Créé en ensemble à partir d'une liste à 2 dimensions
+   (récursivité terminale)*)
+let list2d_ensemble ll =
+  list_ensemble (aplatir_list ll);;
+
+(*Test list2d_ensemble
+   list2d_ensemble [[1;4;5];[4;7;2;5];[7;1;0;2;5;4]];;*)
+
+(*is_in : 'a -> 'a list -> bool
+   renvoie true si l'élément x est dans la liste l
+   renvoie false sinon*)
+let rec is_in x l =
+  match l with
+  | [] -> false
+  | y::l when y = x -> true
+  | y::l -> is_in x l;;
+
+(*Tests is_in
+   is_in 1 [4;5;8;4;6;4;5;2;4];;
+   is_in 2 [4;5;8;4;6;4;5;2;4];;*)
+
+(*pur_rec : int list -> int
+   fonction auxiliair de pur
+   prend un ensemble en paramètre
+   initialiser p à []
+   (recursivité terminale)*)
+exception Failure_no_pur
+let rec pur_rec e p =
+  match e with
+  (*les clauses ne contiennent pas de littéral pur
+     on renvoie l'exception 'Failure_no_pur'*)
+  | [] -> raise Failure_no_pur
+  | x::e -> 
+    (*le littéral n'est pas pur on continu*)
+    if (is_in (-x) e) ||  (is_in (-x) p) then
+      pur_rec e (x::p)
+    (*le littéral est pur on le renvoi*)
+    else
+      x;;
+
 (* pur : int list list -> int
     - si `clauses' contient au moins un littéral pur, retourne
       ce littéral ;
     - sinon, lève une exception `Failure "pas de littéral pur"' *)
 let pur clauses =
-  (* à compléter *)
-  0
+  (*appelle pur_rec sur l'ensemble de tous les littéraux de chaque clauses*)
+  pur_rec (list2d_ensemble clauses) [];;
+
+(*Tests pur
+   pur [[1;4;-5];[4;-7;-2;-5];[7;-1;2;5;-4]];;
+   pur [[1;4;-5];[4;-7;-2;-5];[7;-1;2;5;4]];;*)
 
 (* solveur_dpll_rec : int list list -> int list -> int list option *)
 let rec solveur_dpll_rec clauses interpretation =

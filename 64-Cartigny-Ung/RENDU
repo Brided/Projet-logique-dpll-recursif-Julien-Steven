@@ -19,7 +19,7 @@ Questions sur votre code
    et que ensuite `./dpll sudoku-4x4.cnf` donne la réponse attendue (voir
    fichier README) ?
 
-**à remplir**
+Le programme compile et s'éxécute sans erreurs et `./dpll sudoku-4x4.cnf` donne bien les mêmes réponse que dans le fichier README.
 
 ---
 
@@ -62,12 +62,11 @@ Un match de la clause abvec [l] suffit.
    quelques phrases en français comment ces fonctions auxiliaires sont
    utilisées dans votre implémentation de la fonction `pur`.
 
-insert_ensemble x l : insert un élément dans l'ensemble e
-list_ensemble l : transforme la liste l en ensemble
 aplatir_list ll : transforme la liste en 2D ll en liste à 1 dimension
-pur_rec e p : prend en paramètre un ensemble et une liste vide et renvoi un élément pur si il y en a et une exception sinon
+pur_rec l p : prend en paramètre une liste et une liste vide et renvoi un élément pur si il y en a et une exception sinon.
 
-Pour commencer on applati la liste des clause en une liste à une dimension (aplatir_list) , puis on créer un ensemble à partir de cette liste (list_ensemble). pur_rec traverse l'ensemble en stockant les littéraux traversé dans 'p' et vérifi que le négatif du littéral soit dans l'ensemble et dans 'p', si c'est le cas on continu sinon on renvoi le littérale.
+Pour commencer on applati la liste des clause en une liste à une dimension (aplatir_list). 
+pur_rec traverse la liste en stockant les littéraux traversé et leur négatif dans 'p' et vérifi que le négatif du littéral soit dans la liste, si c'est le cas on continu sinon on renvoi le littérale.
 
 ---
 

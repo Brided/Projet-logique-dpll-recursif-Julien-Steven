@@ -74,7 +74,9 @@ pur_rec traverse la liste en stockant les littéraux traversé et leur négatif 
    `solveur_split` et `solveur_dpll_rec` ont un comportement
    différent, et expliquez les différences entre ces deux fonctions.
 
-**à remplir**
+Pour (1;4;-5)(4;-7;-2;-5)(7;-1;2;5;4): solveur_split va commencer par fair un branchement sur 1 alors que solveur_dpll_rec va commencer par simplifier le littérale pur (4) ce qui donnera des interpretations différentes. solveur_split donnera (1 4 0) alors que solveur_dpll_rec donnera (4 0).
+solveur_dpll_rec est plus rapide parceque il y a moins de branches.
+
 
 ---
 
